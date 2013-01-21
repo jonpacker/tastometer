@@ -3,3 +3,12 @@
   stroke: black;
   stroke-width: 2px;
 }
+
+.tastometer-step-circle:first-child {
+  stroke-width: 3px;
+}
+
+.tastometer-corner-cord {
+  stroke: black;
+  stroke-width: 2px;
+}
