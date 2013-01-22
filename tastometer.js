@@ -38,8 +38,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 .append('g')
                 .attr('transform', centerTrans);
 
+    var currentBobbleLabel = svg.append('svg:text').attr({
+      'class': cl('bobble-label'),
+      x: 0,
+      y: 0,
+      'text-anchor': 'middle',
+      'baseline-shift': '-30%'
+    });
+
     var stepRadiusIncrement = opts.radius / (opts.steps + 1);
     _.range(1, opts.steps + 1).reverse().forEach(function(step) {
+      // WTF didn't I just use a <circle> here. wow. TODO :/
       var stepCircle = d3.svg.arc()
         .outerRadius(step * stepRadiusIncrement)
         .innerRadius(0)
@@ -60,11 +69,14 @@ document.addEventListener("DOMContentLoaded", function() {
       var multiplierX = Math.cos(radians);
       var multiplierY = Math.sin(radians);
 
+      var group = svg.append('g');
+
       // draw cord
-      var cornerCord = svg.append('svg:line').attr({
+      var cornerCord = group.append('svg:line').attr({
         x1: cordLength * multiplierX,
         y1: cordLength * multiplierY,
-        x2: 0, y2: 0,
+        x2: stepRadiusIncrement * multiplierX,
+        y2: stepRadiusIncrement * multiplierY,
         'class': cl('corner-cord')
       });
 
@@ -74,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
         labelRadius * multiplierX,
         labelRadius * multiplierY
       ];
-      var label = svg.append('svg:text').attr({
+      var label = group.append('svg:text').attr({
         x: labelRadius * multiplierX,
         y: labelRadius * multiplierY,
         transform: 'rotate(' + rotation + ')',
@@ -85,14 +97,16 @@ document.addEventListener("DOMContentLoaded", function() {
       // hover arc
       var hoverArc = d3.svg.arc()
         .innerRadius(0)
-        .outerRadius(stepRadiusIncrement * opts.steps)
+        .outerRadius(stepRadiusIncrement * (opts.steps + 1))
         .startAngle(Math.PI / 2 + radians - radianStep / 2)
         .endAngle(Math.PI / 2 + radians + radianStep / 2);
-      var hoverArcPath = svg.append('path')
+      var hoverArcPath = group.append('path')
         .attr({
           d: hoverArc,
-          'class': cl('pie-piece')
-        })
+          'class': cl('hover-pie-piece')
+        });
+
+      group
         .on('mouseover', function() {
           label.classed(cl('active'), true);
           cornerCord.classed(cl('active'), true);
@@ -101,6 +115,22 @@ document.addEventListener("DOMContentLoaded", function() {
           label.classed(cl('active'), false);
           cornerCord.classed(cl('active'), false);
         });
+
+      // draw bobbles
+      _.range(1, opts.steps + 1).forEach(function(step) {
+        var bobble = group.append('circle').attr({
+          cx: step * stepRadiusIncrement * multiplierX,
+          cy: step * stepRadiusIncrement * multiplierY,
+          r: 4,
+          'class': cl('bobble')       
+        }).on('mouseover', function() {
+          bobble.attr('r', 6);
+          currentBobbleLabel.text(step);
+        }).on('mouseout', function() {
+          bobble.attr('r', 4);
+          currentBobbleLabel.text('');
+        });
+      });
       
     });
   };
