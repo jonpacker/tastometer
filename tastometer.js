@@ -52,18 +52,34 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     
     var cordLength = opts.radius - stepRadiusIncrement;
-    _.range(0, opts.corners.length).forEach(function(corner) {
-      var actuation = corner / opts.corners.length;
-      var lineL
-      var cornerX = cordLength * Math.cos(Math.PI * 2 * actuation);
-      var cornerY = cordLength * Math.sin(Math.PI * 2 * actuation);
+    var labelRadius = opts.radius - stepRadiusIncrement * 0.75;
+    opts.corners.forEach(function(label, i) {
+      var actuation = i / opts.corners.length;
+      var multiplierX = Math.cos(Math.PI * 2 * actuation);
+      var multiplierY = Math.sin(Math.PI * 2 * actuation);
+
+      // draw cord
       var cornerCord = svg.append('svg:line').attr({
-        x1: cornerX,
-        y1: cornerY,
-        x2: 0,
-        y2: 0,
+        x1: cordLength * multiplierX,
+        y1: cordLength * multiplierY,
+        x2: 0, y2: 0,
         'class': cl('corner-cord')
       });
+
+      // draw label
+      var rotation = [
+        actuation * 360 + 90,
+        labelRadius * multiplierX,
+        labelRadius * multiplierY
+      ];
+      var label = svg.append('svg:text').attr({
+        x: labelRadius * multiplierX,
+        y: labelRadius * multiplierY,
+        transform: 'rotate(' + rotation + ')',
+        'text-anchor': 'middle',
+        'class': cl('corner-label')
+      }).text(label);
+      
     });
   };
   renderTastometer();

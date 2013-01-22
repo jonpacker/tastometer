@@ -12,3 +12,18 @@
   stroke: black;
   stroke-width: 2px;
 }
+
+.tastometer-corner-cord.tastometer-active {
+  stroke-width: 3px;
+}
+
+.tastometer-corner-label {
+  fill: black;
+  font-family: Helvetica;
+  font-size: 13px;
+  text-transform: lowercase;
+}
+
+.tastometer-corner-label.tastometer-active {
+  font-weight: bold;
+}
