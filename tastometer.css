@@ -17,6 +17,10 @@
   stroke-width: 3px;
 }
 
+.tastometer-pie-piece {
+  opacity: 0;
+}
+
 .tastometer-corner-label {
   fill: black;
   font-family: Helvetica;

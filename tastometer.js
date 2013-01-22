@@ -53,10 +53,12 @@ document.addEventListener("DOMContentLoaded", function() {
     
     var cordLength = opts.radius - stepRadiusIncrement;
     var labelRadius = opts.radius - stepRadiusIncrement * 0.75;
+    var radianStep = Math.PI * 2 / opts.corners.length;
     opts.corners.forEach(function(label, i) {
       var actuation = i / opts.corners.length;
-      var multiplierX = Math.cos(Math.PI * 2 * actuation);
-      var multiplierY = Math.sin(Math.PI * 2 * actuation);
+      var radians = radianStep * i;
+      var multiplierX = Math.cos(radians);
+      var multiplierY = Math.sin(radians);
 
       // draw cord
       var cornerCord = svg.append('svg:line').attr({
@@ -79,6 +81,26 @@ document.addEventListener("DOMContentLoaded", function() {
         'text-anchor': 'middle',
         'class': cl('corner-label')
       }).text(label);
+
+      // hover arc
+      var hoverArc = d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius(stepRadiusIncrement * opts.steps)
+        .startAngle(Math.PI / 2 + radians - radianStep / 2)
+        .endAngle(Math.PI / 2 + radians + radianStep / 2);
+      var hoverArcPath = svg.append('path')
+        .attr({
+          d: hoverArc,
+          'class': cl('pie-piece')
+        })
+        .on('mouseover', function() {
+          label.classed(cl('active'), true);
+          cornerCord.classed(cl('active'), true);
+        })
+        .on('mouseout', function() {
+          label.classed(cl('active'), false);
+          cornerCord.classed(cl('active'), false);
+        });
       
     });
   };
